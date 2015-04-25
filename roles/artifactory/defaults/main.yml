@@ -1,0 +1,11 @@
+---
+artifactory_username: "artifactory"
+artifactory_password: "password"
+
+features:
+  mysql: True
+  postgresql: False
+
+rpm_components:
+  - 'java-1.7.0-openjdk'
+  - 'java-1.7.0-openjdk-devel'

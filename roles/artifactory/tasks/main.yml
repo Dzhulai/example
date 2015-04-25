@@ -1,0 +1,27 @@
+---
+- name: 'rpm_components are installed?'
+  yum: name={{item}} state=installed
+  when: ansible_os_family == "RedHat"
+  register: installed
+  retries: 3
+  with_items: rpm_components
+  
+- name: 'directory exists for artifactory?'
+  file: dest=/opt/artifactory state=directory mode=0755
+  
+- name: 'verify presence of artifactory'
+  stat: path="/opt/artifactory/artifactory-{{artifactory_version}}/webapps/artifactory.war"
+  register: jarfile
+
+- name: 'presence of artifactory_file?'
+  stat: path=/tmp/{{artifactory_file}}
+  register: download
+
+- name: 'download art'
+  get_url: url={{artifactory_url}} dest=/tmp/{{artifactory_file}}
+  retries: 3
+  when: not download.stat.exists
+
+- name: 'unzip artifactory'
+  command: unzip -o  /tmp/{{artifactory_file}} -d /opt/artifactory
+  when: not jarfile.stat.exists
